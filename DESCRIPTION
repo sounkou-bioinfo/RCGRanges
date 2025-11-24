@@ -1,0 +1,18 @@
+Package: RCGRanges
+Title: 'R' Bindings for The 'C' 'CGRanges' Library
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Sounkou Mahamane", family= "Toure", email = "sounkoutoure@gmail.com", role = c("aut", "cre")),
+    person(given = "Heng", family= "Li", role = "ctb", comment = c("Author of CGRanges C library"))
+        )
+Description: 'R' bindings for the 'C' CGRanges library for efficient manipulation of genomic ranges.
+Depends: R (>= 4.4.0)
+Imports:
+    S7
+Suggests:
+    tinytest,
+    GenomicRanges
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
