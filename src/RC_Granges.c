@@ -227,7 +227,8 @@ SEXP RC_cr_overlap(SEXP cr_extptr, SEXP ctg, SEXP st, SEXP en) {
     int64_t n_overlap = cr_overlap(cr_ptr, ctg_str, st_val, en_val, &b, &m_b);
     SEXP result = PROTECT(Rf_allocVector(INTSXP, n_overlap));
     for(int64_t i = 0; i < n_overlap; i++) {
-        INTEGER(result)[i] = (int32_t)b[i];
+        // Return 1-based indices to R
+        INTEGER(result)[i] = (int32_t)b[i] + 1;
     }
     free(b);
     UNPROTECT(1);
@@ -256,7 +257,8 @@ SEXP RC_cr_overlap_vectorized(SEXP cr_extptr, SEXP ctg, SEXP st, SEXP en) {
         int64_t n_overlap = cr_overlap(cr_ptr, ctg_str, st_val, en_val, &b, &m_b);
         SEXP result = PROTECT(Rf_allocVector(INTSXP, n_overlap));
         for(int64_t j = 0; j < n_overlap; j++) {
-            INTEGER(result)[j] = (int32_t)b[j];
+            // Return 1-based indices to R
+            INTEGER(result)[j] = (int32_t)b[j] + 1;
         }
         free(b);
         SET_VECTOR_ELT(result_list, i, result);
