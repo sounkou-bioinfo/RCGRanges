@@ -41,7 +41,7 @@ gr
 #>  @ nranges : num 0
 #>  @ ncontigs: int 0
 gr@.ptr
-#> <pointer: 0x628482215900>
+#> <pointer: 0x63f780723900>
 
 addIntervals(gr, contig_names = grnms, starts = starts, ends = ends, labels = labels)
 #> NULL
@@ -64,7 +64,7 @@ gr
 #>  @ nranges : num 2
 #>  @ ncontigs: int 2
 gr@.ptr
-#> <pointer: 0x628482215900>
+#> <pointer: 0x63f780723900>
 
 # Create second CGRanges object
 gr2 <- CGRanges()
