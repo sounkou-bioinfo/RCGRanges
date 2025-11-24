@@ -41,7 +41,7 @@ gr
 #>  @ nranges : num 0
 #>  @ ncontigs: int 0
 gr@.ptr
-#> <pointer: 0x63f780723900>
+#> <pointer: 0x5e09c09b5060>
 
 addIntervals(gr, contig_names = grnms, starts = starts, ends = ends, labels = labels)
 #> NULL
@@ -64,7 +64,7 @@ gr
 #>  @ nranges : num 2
 #>  @ ncontigs: int 2
 gr@.ptr
-#> <pointer: 0x63f780723900>
+#> <pointer: 0x5e09c09b5060>
 
 # Create second CGRanges object
 gr2 <- CGRanges()
@@ -72,36 +72,17 @@ addIntervals(gr2, contig_names = c("chr1", "chr2"), starts = c(120L, 210L), ends
 #> NULL
 gr2 <- index(gr2)
 
-
-# Find overlaps between gr and gr2 (indices are 1-based in R)
+# Find overlaps between gr and gr2
 overlaps <- overlap(gr, gr2)
-overlaps_1based <- lapply(overlaps, function(x) lapply(x, function(idx) idx + 1))
-print(overlaps_1based)
+overlaps
 #> [[1]]
 #> [[1]][[1]]
+#> [1] 1
+#> 
+#> 
+#> [[2]]
+#> [[2]][[1]]
 #> [1] 2
-#> 
-#> 
-#> [[2]]
-#> [[2]][[1]]
-#> [1] 3
-
-# Example: non-overlapping intervals
-gr3 <- CGRanges()
-addIntervals(gr3, contig_names = c("chr1", "chr2"), starts = c(300L, 400L), ends = c(350L, 450L), labels = c(5L, 6L))
-#> NULL
-gr3 <- index(gr3)
-overlaps_none <- overlap(gr, gr3)
-overlaps_none_1based <- lapply(overlaps_none, function(x) lapply(x, function(idx) idx + 1))
-print(overlaps_none_1based)
-#> [[1]]
-#> [[1]][[1]]
-#> numeric(0)
-#> 
-#> 
-#> [[2]]
-#> [[2]][[1]]
-#> numeric(0)
 ```
 
 ## Reference
