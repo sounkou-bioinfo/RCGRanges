@@ -2,10 +2,10 @@
 % Please edit documentation in R/RCGRanges.R
 \name{overlap}
 \alias{overlap}
-\title{overlap between two CGRanges objects}
+\title{Find overlaps between two CGRanges objects}
 \usage{
 overlap(x, y, ...)
 }
 \description{
-overlap between two CGRanges objects
+Find overlaps between two CGRanges objects
 }

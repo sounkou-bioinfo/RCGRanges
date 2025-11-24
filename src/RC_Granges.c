@@ -3,9 +3,6 @@
 #include <R_ext/Rdynload.h>
 #include "cgranges.h"
 
-// forwar declare all sexp functions
-
-
 
 ///typedef struct {
 //	int64_t n_r, m_r;     // number and max number of intervals
@@ -378,42 +375,48 @@ SEXP RC_cr_from_overlap(SEXP cr_extptr, SEXP ctg, SEXP st, SEXP en) {
     if (cr_ptr == NULL) {
         Rf_error("cgranges_t object has been freed.");
     }
-    if(TYPEOF(ctg) != STRSXP || XLENGTH(ctg) != 1) {
-        Rf_error("ctg must be a single character string.");
+    R_xlen_t n = XLENGTH(ctg);
+    if(TYPEOF(ctg) != STRSXP || TYPEOF(st) != INTSXP || TYPEOF(en) != INTSXP) {
+        Rf_error("ctg must be STRSXP, st and en must be INTSXP.");
     }
-    if(TYPEOF(st) != INTSXP || XLENGTH(st) != 1) {
-        Rf_error("st must be a single integer.");
+    if(XLENGTH(st) != n || XLENGTH(en) != n) {
+        Rf_error("ctg, st, and en must have the same length.");
     }
-    if(TYPEOF(en) != INTSXP || XLENGTH(en) != 1) {
-        Rf_error("en must be a single integer.");
-    }
-    const char *ctg_str = CHAR(STRING_ELT(ctg, 0));
-    int32_t st_val = INTEGER(st)[0];
-    int32_t en_val = INTEGER(en)[0];
     cgranges_t *new_cr_ptr = cr_init();
     if (new_cr_ptr == NULL) {
         Rf_error("Failed to initialize cgranges_t object.");
     }
-    int64_t *b = NULL;
-    int64_t m_b = 0;
-    int64_t n_overlap = cr_overlap(cr_ptr, ctg_str, st_val, en_val, &b, &m_b);
-    for(int64_t i = 0; i < n_overlap; i++) {
-        int64_t idx = b[i];
-        cr_intv_t *r = &cr_ptr->r[idx];
-        int32_t ctg_id = (int32_t)(r->x >> 32);
-        const char *orig_ctg_name = cr_ptr->ctg[ctg_id].name;
-        int32_t orig_st = cr_start(cr_ptr, idx);
-        int32_t orig_en = cr_end(cr_ptr, idx);
-        int32_t label = cr_label(cr_ptr, idx);
-        cr_add(new_cr_ptr, orig_ctg_name, orig_st, orig_en, label);
+    SEXP hits_list = PROTECT(Rf_allocVector(VECSXP, n));
+    for(R_xlen_t i = 0; i < n; i++) {
+        const char *ctg_str = CHAR(STRING_ELT(ctg, i));
+        int32_t st_val = INTEGER(st)[i];
+        int32_t en_val = INTEGER(en)[i];
+        int64_t *b = NULL;
+        int64_t m_b = 0;
+        int64_t n_overlap = cr_overlap(cr_ptr, ctg_str, st_val, en_val, &b, &m_b);
+        SEXP result = PROTECT(Rf_allocVector(INTSXP, n_overlap));
+        for(int64_t j = 0; j < n_overlap; j++) {
+            int64_t idx = b[j];
+            INTEGER(result)[j] = (int32_t)idx + 1;
+            cr_intv_t *r = &cr_ptr->r[idx];
+            int32_t ctg_id = (int32_t)(r->x >> 32);
+            int32_t orig_en = cr_end(cr_ptr, idx);
+            int32_t orig_st = cr_start(cr_ptr, idx);
+            int32_t label = cr_label(cr_ptr, idx);
+            cr_add(new_cr_ptr, ctg_str, orig_st, orig_en, label);
+        }
+        free(b);
+        SET_VECTOR_ELT(hits_list, i, result);
+        UNPROTECT(1);
     }
-    free(b);
     cr_index(new_cr_ptr);
     SEXP new_cr_extptr = PROTECT(R_MakeExternalPtr(new_cr_ptr, R_NilValue, R_NilValue));
     R_RegisterCFinalizerEx(new_cr_extptr, (R_CFinalizer_t)RC_cr_destroy, TRUE);
-    UNPROTECT(1);
+    Rf_setAttrib(new_cr_extptr, Rf_install("hits"), hits_list);
+    UNPROTECT(2);
     return new_cr_extptr;
 }
+
 // Register routines
 static const R_CallMethodDef CallEntries[] = {
     {"RC_cr_init", (DL_FUNC) &RC_cr_init, 0},
@@ -429,7 +432,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"RC_get_cr_contigs", (DL_FUNC) &RC_get_cr_contigs, 1},
     {"RC_get_cr_n_intervals", (DL_FUNC) &RC_get_cr_n_intervals, 1},
     {"RC_get_cr_n_contigs", (DL_FUNC) &RC_get_cr_n_contigs, 1},
-    {"RC_cr_from_overlap", (DL_FUNC) &RC_cr_from_overlap, 3},
+    {"RC_cr_from_overlap", (DL_FUNC) &RC_cr_from_overlap, 4},
     {NULL, NULL, 0}
 };
 

@@ -2,15 +2,12 @@
 % Please edit documentation in R/RCGRanges.R
 \name{index}
 \alias{index}
-\title{index CGRanges object}
+\title{Index CGRanges object}
 \usage{
 index(x, ...)
 }
-\arguments{
-\item{x}{CGRanges object}
-}
 \description{
-index CGRanges object
+Index CGRanges object
 
-index method for CGRanges
+Index method for CGRanges object
 }

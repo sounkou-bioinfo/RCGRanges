@@ -9,7 +9,6 @@ NULL
     S7::methods_register()
 }
 
-
 #' CGRanges S7 Class
 #' An S7 class representing a CGRanges object.
 #' @export
@@ -69,15 +68,24 @@ CGRanges <- S7::new_class(
 )
 
 #' @export
-addIntervals <- S7::new_generic("addIntervals", "x", function(x, contig_names, starts, ends, labels, ...) {
-    S7::S7_dispatch()
-})
+addIntervals <- S7::new_generic(
+    "addIntervals",
+    "x",
+    function(x, contig_names, starts, ends, labels, ...) {
+        S7::S7_dispatch()
+    }
+)
 
 
 #' add intervals to CGRanges object method
 #' @name addIntervals
 #' @export
-S7::method(addIntervals, CGRanges) <- function(x, contig_names, starts, ends, labels) {
+S7::method(addIntervals, CGRanges) <- function(
+    x,
+    contig_names,
+    starts,
+    ends,
+    labels) {
     .Call(
         RC_cr_add,
         x@.ptr,
@@ -86,19 +94,17 @@ S7::method(addIntervals, CGRanges) <- function(x, contig_names, starts, ends, la
         ends,
         labels
     )
+    invisible(x)
 }
 
-#' index CGRanges object
-#' @param x CGRanges object
+#' Index CGRanges object
+#' @name index
 #' @export
-index <- S7::new_generic(
-    "index", "x",
-    function(x, ...) {
-        S7::S7_dispatch()
-    }
-)
+index <- S7::new_generic("index", "x", function(x, ...) {
+    S7::S7_dispatch()
+})
 
-#' index method for CGRanges
+#' Index method for CGRanges object
 #' @name index
 #' @export
 S7::method(index, CGRanges) <- function(x) {
@@ -107,28 +113,47 @@ S7::method(index, CGRanges) <- function(x) {
     invisible(x)
 }
 
-#' overlap between two CGRanges objects
+#' Find overlaps between two CGRanges objects
+#' @name overlap
 #' @export
 overlap <- S7::new_generic("overlap", c("x", "y"), function(x, y, ...) {
     S7::S7_dispatch()
 })
 
-#' overlap method for two CGRanges
+## Overlap method for two CGRanges objects
+#' @name overlap
 #' @export
 S7::method(overlap, list(CGRanges, CGRanges)) <- function(x, y) {
-    rngs <- y@ranges
-    contigs <- rngs[[1]]
-    starts <- rngs[[2]]
-    ends <- rngs[[3]]
-    result <- vector("list", length(starts))
-    for (i in seq_along(starts)) {
-        result[[i]] <- .Call(
-            RC_cr_overlap_vectorized,
-            x@.ptr,
-            as.character(contigs[i]),
-            as.integer(starts[i]),
-            as.integer(ends[i])
-        )
-    }
-    result
+    y_ranges <- y@ranges
+    out_ptr <- .Call(
+        RC_cr_from_overlap,
+        x@.ptr,
+        as.character(y_ranges[[1]]),
+        as.integer(y_ranges[[2]]),
+        as.integer(y_ranges[[3]])
+    )
+    hits <- attr(out_ptr, "hits")
+    attr(out_ptr, "hits") <- NULL
+    CGRangesOverlap(
+        .ptr = out_ptr,
+        indexed = TRUE,
+        hits = hits
+    )
 }
+#' CGRangesOverlap S7 Class
+#' Inherits from CGRanges, adds 'hits' field for overlap indices
+#' @export
+CGRangesOverlap <- S7::new_class(
+    "CGRangesOverlap",
+    parent = CGRanges,
+    properties = list(
+        hits = S7::new_property(
+            default = list(),
+            validator = function(value) {
+                if (!is.list(value)) {
+                    "hits must be a list of integer vectors"
+                }
+            }
+        )
+    )
+)
