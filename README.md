@@ -41,7 +41,7 @@ gr
 #>  @ nranges : num 0
 #>  @ ncontigs: int 0
 gr@.ptr
-#> <pointer: 0x5e09c09b5060>
+#> <pointer: 0x62ba5efcf970>
 
 addIntervals(gr, contig_names = grnms, starts = starts, ends = ends, labels = labels)
 #> NULL
@@ -64,11 +64,11 @@ gr
 #>  @ nranges : num 2
 #>  @ ncontigs: int 2
 gr@.ptr
-#> <pointer: 0x5e09c09b5060>
+#> <pointer: 0x62ba5efcf970>
 
 # Create second CGRanges object
 gr2 <- CGRanges()
-addIntervals(gr2, contig_names = c("chr1", "chr2"), starts = c(120L, 210L), ends = c(160L, 260L), labels = c(3L, 4L))
+addIntervals(gr2, contig_names = c("chr1", "chr2", "chr1"), starts = c(120L, 210L, 300L), ends = c(160L, 260L, 350L), labels = c(3L, 4L, 99L))
 #> NULL
 gr2 <- index(gr2)
 
@@ -82,6 +82,11 @@ overlaps
 #> 
 #> [[2]]
 #> [[2]][[1]]
+#> integer(0)
+#> 
+#> 
+#> [[3]]
+#> [[3]][[1]]
 #> [1] 2
 ```
 
