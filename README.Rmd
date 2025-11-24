@@ -44,10 +44,17 @@ addIntervals(gr, contig_names = grnms, starts = starts, ends = ends, labels = la
 gr <- index(gr)
 gr
 gr@.ptr
+
+# Create second CGRanges object
+gr2 <- CGRanges()
+addIntervals(gr2, contig_names = c("chr1", "chr2"), starts = c(120L, 210L), ends = c(160L, 260L), labels = c(3L, 4L))
+gr2 <- index(gr2)
+
+# Find overlaps between gr and gr2
+overlaps <- overlap(gr, gr2)
+overlaps
 ```
 
 ## Reference
 
 - [cgranges by Heng Li](https://github.com/lh3/cgranges)
-
----

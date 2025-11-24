@@ -106,3 +106,29 @@ S7::method(index, CGRanges) <- function(x) {
     x@indexed <- TRUE
     invisible(x)
 }
+
+#' overlap between two CGRanges objects
+#' @export
+overlap <- S7::new_generic("overlap", c("x", "y"), function(x, y, ...) {
+    S7::S7_dispatch()
+})
+
+#' overlap method for two CGRanges
+#' @export
+S7::method(overlap, list(CGRanges, CGRanges)) <- function(x, y) {
+    rngs <- y@ranges
+    contigs <- rngs[[1]]
+    starts <- rngs[[2]]
+    ends <- rngs[[3]]
+    result <- vector("list", length(starts))
+    for (i in seq_along(starts)) {
+        result[[i]] <- .Call(
+            RC_cr_overlap_vectorized,
+            x@.ptr,
+            as.character(contigs[i]),
+            as.integer(starts[i]),
+            as.integer(ends[i])
+        )
+    }
+    result
+}

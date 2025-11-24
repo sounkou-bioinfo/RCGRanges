@@ -5,7 +5,7 @@
 \title{CGRanges S7 Class
 An S7 class representing a CGRanges object.}
 \usage{
-CGRanges(.ptr = .Call(RC_cr_init))
+CGRanges(.ptr = .Call(RC_cr_init), indexed = FALSE)
 }
 \description{
 CGRanges S7 Class
