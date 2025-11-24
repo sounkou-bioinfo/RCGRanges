@@ -1,0 +1,53 @@
+---
+output: github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%"
+)
+```
+
+# RCGRanges
+
+A minimal R interface to [cgranges](https://github.com/lh3/cgranges) by Heng Li, for fast interval and range queries in genomics.
+
+## Installation
+
+```r
+# Install
+remotes::install_github("sounkou-bionfo/RCGRanges")
+```
+
+## Usage
+
+```{r simple, message=TRUE, warning=TRUE}
+
+library(RCGRanges)
+
+# Create a CGRanges object
+gr <- CGRanges()
+
+# Add intervals
+grnms <- c("chr1", "chr2")
+starts <- c(100L, 200L)
+ends <- c(150L, 250L)
+labels <- c(1L, 2L)
+gr
+gr@.ptr
+
+addIntervals(gr, contig_names = grnms, starts = starts, ends = ends, labels = labels)
+
+# Index intervals
+gr <- index(gr)
+gr
+gr@.ptr
+```
+
+## Reference
+
+- [cgranges by Heng Li](https://github.com/lh3/cgranges)
+
+---
